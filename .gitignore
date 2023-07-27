@@ -3,3 +3,9 @@
 /ThomasGreg.Web/bin
 /ThomasGreg.Web/obj
 /.vs
+/ThomasGreg.Application/bin
+/ThomasGreg.Application/obj
+/ThomasGreg.Infrastructure/bin
+/ThomasGreg.Infrastructure/obj
+/ThomasGreg.Domain/bin
+/ThomasGreg.Domain/obj
