@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
 using ThomasGreg.Application.Interfaces;
@@ -17,73 +18,35 @@ namespace ThomasGreg.Application.Implementations
         {
             _repositoryBase = repositoryBase;
         }
-        public async Task Adicionar(TModel model)
+        public virtual async Task Adicionar(TModel model)
         {
-            try
-            {
-                await _repositoryBase.Adicionar(model);
-            }
-            catch (Exception ex)
-            {
-                // log
-            }
+            await _repositoryBase.Adicionar(model);
         }
 
-        public async Task Atualizar(TModel model)
+        public virtual async Task Atualizar(TModel model)
         {
-            try
-            {
-
-                await _repositoryBase.Atualizar(model);
-            }
-            catch (Exception ex)
-            {
-                // log
-            }
+            await _repositoryBase.Atualizar(model);
         }
 
-        public async Task Deletar(int id)
+        public virtual async Task Deletar(int id)
         {
-            try
-            {
-                await _repositoryBase.Deletar(id);
-            }
-            catch (Exception ex)
-            {
-                // log
-            }
+            await _repositoryBase.Deletar(id);
         }
 
-        public void Dispose()
+        public virtual void Dispose()
         {
             _repositoryBase.Dispose();
         }
 
-        public async Task<TModel> ObterPorId(int id)
+        public virtual async Task<TModel> ObterPorId(int id)
         {
-            try
-            {
-                return await _repositoryBase.ObterPorId(id);
-            }
-            catch (Exception ex)
-            {
-                // log
-                return null;
-            }
+            return await _repositoryBase.ObterPorId(id);
         }
 
 
-        public async Task<IEnumerable<TModel>> ObterTodos()
+        public virtual async Task<IEnumerable<TModel>> ObterTodos()
         {
-            try
-            {
-                return await _repositoryBase.ObterTodos();
-            }
-            catch (Exception ex)
-            {
-                // log
-                return Enumerable.Empty<TModel>();
-            }
+            return await _repositoryBase.ObterTodos();
         }
     }
 }

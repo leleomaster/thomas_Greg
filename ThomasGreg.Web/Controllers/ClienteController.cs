@@ -22,7 +22,7 @@ namespace ThomasGreg.Web.Controllers
         {
             var result = await _serviceBase.ObterTodos(Helpers.GetTokenSession(HttpContext));
             Helpers.ConvertImgDataURL(result);
-
+            await SetViewBagLogradouros();
             return View(result);
         }
 
@@ -40,7 +40,7 @@ namespace ThomasGreg.Web.Controllers
             {
                 return NotFound();
             }
-            await SetViewBagLogradouros();
+          
             return View(Cliente);
         }
 
@@ -56,27 +56,34 @@ namespace ThomasGreg.Web.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(ClienteViewModel ClienteViewModel)
         {
-            if (ModelState.IsValid)
+            try
             {
-                var file = HttpContext.Request.Form.Files["postedFile"];
-
-                if (file != null && file.Length > 0)
+                if (ModelState.IsValid)
                 {
-                    using (var target = new MemoryStream())
+                    var file = HttpContext.Request.Form.Files["postedFile"];
+
+                    if (file != null && file.Length > 0)
                     {
-                        file.CopyTo(target);
-                        ClienteViewModel.Logotipo = target.ToArray();
+                        using (var target = new MemoryStream())
+                        {
+                            file.CopyTo(target);
+                            ClienteViewModel.Logotipo = target.ToArray();
+                        }
+
+                        // ClienteViewModel.Logotipo = Helpers.GetByteArrayFromImage(file);
+
+                        await _serviceBase.Adicionar(ClienteViewModel, Helpers.GetTokenSession(HttpContext));
+
+                        return RedirectToAction(nameof(Index));
                     }
-
-                    // ClienteViewModel.Logotipo = Helpers.GetByteArrayFromImage(file);
-
-                    await _serviceBase.Adicionar(ClienteViewModel, Helpers.GetTokenSession(HttpContext));
-
-                    return RedirectToAction(nameof(Index));
                 }
+                await SetViewBagLogradouros();
+                return View(ClienteViewModel);
             }
-            await SetViewBagLogradouros();
-            return View(ClienteViewModel);
+            catch (Exception ex)
+            {
+                return BadRequest();
+            }
         }
 
         public async Task<IActionResult> Edit(int id)
@@ -100,35 +107,42 @@ namespace ThomasGreg.Web.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, ClienteViewModel ClienteViewModel)
         {
-            if (id != ClienteViewModel.Id)
+            try
             {
-                return NotFound();
-            }
-
-            if (ModelState.IsValid)
-            {
-                try
-                {
-                    var file = HttpContext.Request.Form.Files["postedFile"];
-
-                    if (file != null && file.Length > 0)
-                    {
-                        using (var target = new MemoryStream())
-                        {
-                            file.CopyTo(target);
-                            ClienteViewModel.Logotipo = target.ToArray();
-                        }
-                        await _serviceBase.Atualizar(ClienteViewModel, Helpers.GetTokenSession(HttpContext));
-                    }
-                }
-                catch (Exception ex)
+                if (id != ClienteViewModel.Id)
                 {
                     return NotFound();
                 }
-                return RedirectToAction(nameof(Index));
+
+                if (ModelState.IsValid)
+                {
+                    try
+                    {
+                        var file = HttpContext.Request.Form.Files["postedFile"];
+
+                        if (file != null && file.Length > 0)
+                        {
+                            using (var target = new MemoryStream())
+                            {
+                                file.CopyTo(target);
+                                ClienteViewModel.Logotipo = target.ToArray();
+                            }
+                            await _serviceBase.Atualizar(ClienteViewModel, Helpers.GetTokenSession(HttpContext));
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        return NotFound();
+                    }
+                    return RedirectToAction(nameof(Index));
+                }
+                await SetViewBagLogradouros();
+                return View(ClienteViewModel);
             }
-            await SetViewBagLogradouros();
-            return View(ClienteViewModel);
+            catch (Exception ex)
+            {
+                return BadRequest();
+            }
         }
 
         public async Task<IActionResult> Delete(int id)
@@ -151,20 +165,28 @@ namespace ThomasGreg.Web.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            if (id <= 0)
+            try
             {
-                return NotFound();
-            }
+                if (id <= 0)
+                {
+                    return NotFound();
+                }
 
-            var model = await _serviceBase.ObterPorId(id, Helpers.GetTokenSession(HttpContext));
-            if (model == null)
+                var model = await _serviceBase.ObterPorId(id, Helpers.GetTokenSession(HttpContext));
+                if (model == null)
+                {
+                    return NotFound();
+                }
+
+                await _serviceBase.Remover(id, Helpers.GetTokenSession(HttpContext));
+
+                return RedirectToAction(nameof(Index));
+
+            }
+            catch (Exception ex)
             {
-                return NotFound();
+                return BadRequest();
             }
-
-            await _serviceBase.Remover(id, Helpers.GetTokenSession(HttpContext));
-
-            return RedirectToAction(nameof(Index));
         }
 
         private async Task SetViewBagLogradouros()

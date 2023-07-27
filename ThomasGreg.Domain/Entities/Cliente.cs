@@ -20,6 +20,24 @@ namespace ThomasGreg.Domain.Entities
         public byte[] Logotipo { get; set; }
 
         [ForeignKey("LogradouroId")]
-        public IEnumerable<Logradouro> LogradouroModels { get; set; }
+        public IList<Logradouro> Logradouros { get; set; }
+
+
+        [NotMapped]
+        public IEnumerable<int> LogradouroId
+        {
+            get
+            {
+                List<int> ids = new List<int>();
+                if (Logradouros != null)
+                {                    
+                    foreach (var item in Logradouros)
+                    {
+                        ids.Add(item.Id);
+                    }
+                }
+                return ids;
+            }
+        }
     }
 }

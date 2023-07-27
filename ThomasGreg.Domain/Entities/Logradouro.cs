@@ -16,6 +16,6 @@ namespace ThomasGreg.Domain.Entities
         public string Numero { get; set; }
 
         [ForeignKey("ClienteId")]
-        public IEnumerable<Cliente> Clientes{ get; set; }
+        public IEnumerable<Cliente> Clientes { get; set; }
     }
 }

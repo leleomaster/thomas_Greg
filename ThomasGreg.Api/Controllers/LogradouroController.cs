@@ -20,49 +20,84 @@ namespace ThomasGreg.Api.Controllers
         [Authorize]
         public async Task<IActionResult> ObterPorId(int id)
         {
-            var result = await _LogradouroService.ObterPorId(id);
-            return Ok(result);
+            try
+            {
+                var result = await _LogradouroService.ObterPorId(id);
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest();
+            }
         }
 
         [HttpGet]
         [Authorize]
         public async Task<ActionResult<List<LogradouroViewModel>>> ObterTodos()
         {
-            var products = await _LogradouroService.ObterTodos();
+            try
+            {
+                var products = await _LogradouroService.ObterTodos();
 
-            return Ok(products);
+                return Ok(products);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest();
+            }
         }
         [HttpPost()]
         [Authorize]
         public async Task<ActionResult> Create([FromBody] LogradouroViewModel entity)
         {
-            if (entity == null) return BadRequest();
+            try
+            {
+                if (entity == null) return BadRequest();
 
-            await _LogradouroService.Adicionar(entity);
+                await _LogradouroService.Adicionar(entity);
 
-            return Ok();
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                return BadRequest();
+            }
         }
 
         [HttpPut()]
         [Authorize]
         public async Task<ActionResult> Atualizar([FromBody] LogradouroViewModel entity)
         {
-            if (entity == null) return BadRequest();
+            try
+            {
+                if (entity == null) return BadRequest();
 
-            await _LogradouroService.Atualizar(entity);
+                await _LogradouroService.Atualizar(entity);
 
-            return Ok();
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                return BadRequest();
+            }
         }
 
         [HttpDelete("{id}")]
         [Authorize]
         public async Task<ActionResult> Delete(int id)
         {
-            if (id <= 0) return BadRequest();
+            try
+            {
+                if (id <= 0) return BadRequest();
 
-            await _LogradouroService.Deletar(id);
+                await _LogradouroService.Deletar(id);
 
-            return Ok();
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                return BadRequest();
+            }
         }
     }
 }

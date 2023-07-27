@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using ThomasGreg.Domain.Models;
 using ThomasGreg.Web.Sevices.Interfaces;
@@ -7,7 +8,7 @@ using ThomasGreg.Web.Utils;
 
 namespace ThomasGreg.Web.Controllers
 {
-    // [Authorize]
+    [Authorize]
     public class LogradouroController : Controller
     {
         private readonly ILogradouroService _serviceBase;

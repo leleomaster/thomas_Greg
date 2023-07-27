@@ -1,4 +1,6 @@
-﻿namespace ThomasGreg.Infrastructure.Interfaces
+﻿using System.Linq.Expressions;
+
+namespace ThomasGreg.Infrastructure.Interfaces
 {
     public interface IRepositoryBase<TEntity, TModel>
         where TEntity : class
@@ -9,7 +11,7 @@
 
         Task<TModel> ObterPorId(int id);
 
-        Task<IEnumerable<TModel>> ObterTodos();
+        Task<IEnumerable<TModel>> ObterTodos(Expression<Func<TEntity, bool>> filter = null, Expression<Func<TEntity, bool>> includes = null);
 
         Task Atualizar(TModel model);
 

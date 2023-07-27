@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http;
 using System.ComponentModel;
+using ThomasGreg.Domain.Entities;
 
 namespace ThomasGreg.Domain.Models
 {
@@ -13,14 +14,13 @@ namespace ThomasGreg.Domain.Models
         [DisplayName("Email")]
         public string Email { get; set; }
 
-        //[DisplayName("Logotipo")]
-        //public IFormFile Imagem { get; set; }
-
         [DisplayName("Logradouros")]
-        public IEnumerable<int> IdsLogradouro { get; set; }
+        public IEnumerable<int> LogradouroId { get; set; }
 
+        [DisplayName("Logotipo")]
         public byte[]? Logotipo { get; set; }
 
         public string? ImgDataURL { get; set; }
+        public IList<LogradouroViewModel> Logradouros { get; set; }
     }
 }

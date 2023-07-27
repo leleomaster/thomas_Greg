@@ -31,11 +31,11 @@
                 <img src="@Model.ImgDataURL" class="max-width-image-cliente">
             </div>
             <div class="form-group">
-                <label asp-for="IdsLogradouro" class="control-label"></label>
-                <select multiple="multiple" class="multi-select" id="my_multi_select1" asp-for="@Model.IdsLogradouro"
+                <label asp-for="LogradouroId" class="control-label"></label>
+                <select multiple="multiple" class="multi-select" id="my_multi_select1" asp-for="@Model.LogradouroId"
                         asp-items="(List<SelectListItem>)ViewBag.Logradouros"></select>
 
-                <span asp-validation-for="IdsLogradouro" class="text-danger"></span>
+                <span asp-validation-for="LogradouroId" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <input type="submit" value="Atualizar" class="btn btn-primary" />

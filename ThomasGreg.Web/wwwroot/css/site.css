@@ -18,6 +18,9 @@ body {
     background: linear-gradient(360deg, #3f87a6, #ebf8e1, #f69d3c);
 }
 
+h1{
+    text-align: center;
+}
 .geral {
     max-width: 1200px;
     margin: 0 auto;
@@ -29,17 +32,27 @@ body {
     width: 100%;
 }
 
+.form-group {
+    margin-top: 15px;
+}
+
 .container-fluid .navbar-nav {
     align-items: center;
     justify-content: center;
 }
 
-.login {
-    max-width: 400px;
+.login,
+.container-crud {
+    max-width: 600px;
     border: 1px solid black;
-    border-radius: 30px;
+    border-radius: 5%;
     padding: 3%;
     width: 100%;
+    margin: 30px auto;
+}
+
+.login {
+    max-width: 400px;
     margin: 8% auto;
 }
 

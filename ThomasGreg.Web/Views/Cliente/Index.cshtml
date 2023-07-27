@@ -1,10 +1,12 @@
-﻿@model IEnumerable<ThomasGreg.Domain.Models.ClienteViewModel>
+﻿@using ThomasGreg.Domain.Entities
+@using ThomasGreg.Domain.Models
+@model IEnumerable<ThomasGreg.Domain.Models.ClienteViewModel>
 
 @{
     ViewData["Title"] = "Index";
 }
 
-<h1>Index</h1>
+<h1>Cliente</h1>
 
 <p>
     <a asp-action="Create">Cadastrar</a>
@@ -21,7 +23,12 @@
             <th>
                 @Html.DisplayNameFor(model => model.Logotipo)
             </th>
-            <th></th>
+            <th>
+                Logradouros
+            </th>
+            <th>
+                Ação
+            </th>
         </tr>
     </thead>
     <tbody>
@@ -36,6 +43,27 @@
                 </td>
                 <td>
                     <img src="@item.ImgDataURL" class="max-width-image-cliente">
+                </td>
+                <td>
+                    @{
+                        var textoLogradouros = "";
+
+                        if (item.Logradouros.Any())
+                        {
+                            foreach (var logra in item.Logradouros)
+                            {
+                                textoLogradouros += $"Rua {logra.Nome}, {logra.Numero} <br>";
+                            }
+                        }
+                        else
+                        {
+                            textoLogradouros = "Não cadastrado";
+                        }
+
+                        <p>
+                            @Html.Raw(textoLogradouros)
+                        </p>
+                    }
                 </td>
                 <td>
                     <a asp-action="Edit" asp-route-id="@item.Id">Atualizar</a> |

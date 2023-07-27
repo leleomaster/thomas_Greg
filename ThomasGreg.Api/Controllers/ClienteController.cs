@@ -20,53 +20,88 @@ namespace ThomasGreg.Api.Controllers
         [Authorize]
         public async Task<IActionResult> ObterPorId(int id)
         {
-            var result = await _clienteService.ObterPorId(id);
-            return Ok(result);
+            try
+            {
+                var result = await _clienteService.ObterPorId(id);
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest();
+            }
         }
 
         [HttpGet]
         [Authorize]
         public async Task<ActionResult<List<ClienteViewModel>>> ObterTodos()
         {
-            var products = await _clienteService.ObterTodos();
+            try
+            {
+                var products = await _clienteService.ObterTodos();
 
-            return Ok(products);
+                return Ok(products);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest();
+            }
         }
         [HttpPost()]
         [Authorize]
         public async Task<ActionResult> Create([FromBody] ClienteViewModel entity)
         {
-            if (entity == null) return BadRequest();
+            try
+            {
+                if (entity == null) return BadRequest();
 
-            var cliente = _clienteService.EmialExiste(entity.Email);
+                var cliente = _clienteService.EmialExiste(entity.Email);
 
-            if (cliente) return BadRequest();
+                if (cliente) return BadRequest();
 
-            await _clienteService.Adicionar(entity);
+                await _clienteService.Adicionar(entity);
 
-            return Ok();
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                return BadRequest();
+            }
         }
 
         [HttpPut()]
         [Authorize]
         public async Task<ActionResult> Atualizar([FromBody] ClienteViewModel entity)
         {
-            if (entity == null) return BadRequest();
+            try
+            {
+                if (entity == null) return BadRequest();
 
-            await _clienteService.Atualizar(entity);
+                await _clienteService.Atualizar(entity);
 
-            return Ok();
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                return BadRequest();
+            }
         }
 
         [HttpDelete("{id}")]
         [Authorize]
         public async Task<ActionResult> Delete(int id)
         {
-            if (id <= 0) return BadRequest();
+            try
+            {
+                if (id <= 0) return BadRequest();
 
-            await _clienteService.Deletar(id);
+                await _clienteService.Deletar(id);
 
-            return Ok();
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                return BadRequest();
+            }
         }
     }
 }
