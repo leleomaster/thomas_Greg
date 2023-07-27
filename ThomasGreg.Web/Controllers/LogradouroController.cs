@@ -1,34 +1,24 @@
 ﻿using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using ThomasGreg.Domain.Models;
 using ThomasGreg.Web.Sevices.Interfaces;
+using ThomasGreg.Web.Utils;
 
 namespace ThomasGreg.Web.Controllers
 {
-   // [Authorize]
+    // [Authorize]
     public class LogradouroController : Controller
     {
-        private readonly ILogradouroServicecs _serviceBase;
-        public LogradouroController(ILogradouroServicecs serviceBase)
+        private readonly ILogradouroService _serviceBase;
+        public LogradouroController(ILogradouroService serviceBase)
         {
             _serviceBase = serviceBase;
         }
 
-        private async Task<string> GetToken()
-        {
-            var token = await HttpContext.GetTokenAsync(JwtBearerDefaults.AuthenticationScheme, "access_token");
-            var token15 = await HttpContext.GetTokenAsync(JwtBearerDefaults.AuthenticationScheme, "teste_access_token");
-
-            var token1 = await HttpContext.GetTokenAsync("teste_access_token");
-            var token2 = await HttpContext.GetTokenAsync("access_token");
-            return token;
-        }
         public async Task<IActionResult> Index()
         {
-            var result = await _serviceBase.ObterTodos(await GetToken());
+            var result = await _serviceBase.ObterTodos(Helpers.GetTokenSession(HttpContext));
 
             return View(result);
         }
@@ -40,7 +30,7 @@ namespace ThomasGreg.Web.Controllers
             {
                 return NotFound();
             }
-            var logradouro = _serviceBase.ObterPorId(id, await GetToken());
+            var logradouro = await _serviceBase.ObterPorId(id, Helpers.GetTokenSession(HttpContext));
 
             if (logradouro == null)
             {
@@ -62,7 +52,7 @@ namespace ThomasGreg.Web.Controllers
         {
             if (ModelState.IsValid)
             {
-                await _serviceBase.Adicionar(logradouroViewModel, await GetToken());
+                await _serviceBase.Adicionar(logradouroViewModel, Helpers.GetTokenSession(HttpContext));
 
                 return RedirectToAction(nameof(Index));
             }
@@ -75,7 +65,7 @@ namespace ThomasGreg.Web.Controllers
             {
                 return NotFound();
             }
-            var logradouro = await _serviceBase.ObterPorId(id, await GetToken());
+            var logradouro = await _serviceBase.ObterPorId(id, Helpers.GetTokenSession(HttpContext));
 
             if (logradouro == null)
             {
@@ -98,9 +88,9 @@ namespace ThomasGreg.Web.Controllers
             {
                 try
                 {
-                    await _serviceBase.Atualizar(logradouroViewModel, await GetToken());
+                    await _serviceBase.Atualizar(logradouroViewModel, Helpers.GetTokenSession(HttpContext));
                 }
-                catch (DbUpdateConcurrencyException)
+                catch (Exception ex)
                 {
                     return NotFound();
                 }
@@ -116,7 +106,7 @@ namespace ThomasGreg.Web.Controllers
                 return NotFound();
             }
 
-            var model = await _serviceBase.ObterPorId(id, await GetToken());
+            var model = await _serviceBase.ObterPorId(id, Helpers.GetTokenSession(HttpContext));
             if (model == null)
             {
                 return NotFound();
@@ -134,13 +124,13 @@ namespace ThomasGreg.Web.Controllers
                 return NotFound();
             }
 
-            var model = await _serviceBase.ObterPorId(id, await GetToken());
+            var model = await _serviceBase.ObterPorId(id, Helpers.GetTokenSession(HttpContext));
             if (model == null)
             {
                 return NotFound();
             }
 
-            await _serviceBase.Remover(id, await GetToken());
+            await _serviceBase.Remover(id, Helpers.GetTokenSession(HttpContext));
 
             return RedirectToAction(nameof(Index));
         }

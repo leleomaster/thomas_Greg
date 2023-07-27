@@ -1,77 +1,105 @@
-using Microsoft.AspNetCore.Authentication.Cookies;
+﻿using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using System.Net;
 using System.Text;
 using ThomasGreg.Web.Sevices.Implementation;
 using ThomasGreg.Web.Sevices.Interfaces;
+using ThomasGreg.Web2.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
-builder.Services.AddControllersWithViews();
+#region "JWT Token For Authentication Login"    
 
-builder.Services.AddAuthentication(
-    CookieAuthenticationDefaults.AuthenticationScheme)
-    .AddCookie(option => {
-        option.LoginPath = "/Account/Login";
-        option.ExpireTimeSpan = TimeSpan.FromMinutes(20);
+SiteKeys.Configure(builder.Configuration.GetSection("Jwt"));
+var key = Encoding.ASCII.GetBytes(SiteKeys.Token);
 
-    });
 
-var key = Encoding.ASCII.GetBytes(builder.Configuration["Jwt:Key"]);
-var validIssuer = builder.Configuration["Jwt:Issuer"];
-var validAudience = builder.Configuration["Jwt:Audience"];
+builder.Services.AddDistributedMemoryCache();
 
-builder.Services
-    .AddAuthentication(jwt =>
-    {
-        jwt.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-        jwt.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-    })
-    .AddJwtBearer(x =>
-    {
-        x.RequireHttpsMetadata = false;
-        x.SaveToken = true;
-        x.TokenValidationParameters = new TokenValidationParameters
-        {
-            ValidIssuer = validIssuer,
-            ValidAudience = validAudience,
-            ValidateIssuerSigningKey = true,
-            IssuerSigningKey = new SymmetricSecurityKey(key),
-            ValidateIssuer = false,
-            ValidateAudience = false
-        };
-
-    });
-
-builder.Services.ConfigureApplicationCookie(options => {
-    options.Events.OnRedirectToAccessDenied = context => {
-        context.Response.StatusCode = 403;
-        return Task.CompletedTask;
-    };
-
-    options.Events.OnRedirectToLogin = context => {
-        context.Response.StatusCode = 401;
-        return Task.CompletedTask;
-    };
+builder.Services.AddSession(options =>
+{
+    options.IdleTimeout = TimeSpan.FromSeconds(60);
+    options.Cookie.HttpOnly = true;
+    options.Cookie.IsEssential = true;
 });
 
-builder.Services.AddScoped<ILogradouroServicecs, LogradouroServicecs>();
 
+builder.Services.AddAuthentication(auth =>
+{
+    auth.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+    auth.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+})
+ .AddJwtBearer(token =>
+ {
+     token.RequireHttpsMetadata = false;
+     token.SaveToken = true;
+     token.TokenValidationParameters = new TokenValidationParameters
+     {
+         ValidateIssuerSigningKey = true,
+         IssuerSigningKey = new SymmetricSecurityKey(key),
+         ValidateIssuer = false,
+         ValidIssuer = SiteKeys.WebSiteDomain,
+         ValidAudience = SiteKeys.WebSiteDomain,
+         ValidateAudience = false,
+         RequireExpirationTime = true,
+         ValidateLifetime = true,
+         ClockSkew = TimeSpan.Zero
+     };
+ });
+
+#endregion
+builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+    .AddCookie(options =>
+    {
+        options.LoginPath = "/Account/Login";
+    });
+
+
+builder.Services.AddScoped<IClienteService, ClienteService>();
+builder.Services.AddScoped<ILogradouroService, LogradouroService>();
+
+// Add services to the container.
+builder.Services.AddControllersWithViews();
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Home/Error");
+    // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
+    app.UseHsts();
 }
+
+// Redireciona o usuário para a página de LOGIN se ele não estiver logado/autenticado
+app.UseStatusCodePages(async context =>
+{
+    var response = context.HttpContext.Response;
+
+    if (response.StatusCode == (int)HttpStatusCode.Unauthorized ||
+            response.StatusCode == (int)HttpStatusCode.Forbidden)
+        response.Redirect("/account/login");
+});
+app.UseHttpsRedirection();
 app.UseStaticFiles();
 
 app.UseRouting();
 
-app.UseHttpsRedirection();
-app.UseAuthentication();;
+app.UseCookiePolicy();
+app.UseSession();
 
+app.Use(async (context, next) =>
+{
+    var JWToken = context.Session.GetString("JWToken");
+    if (!string.IsNullOrEmpty(JWToken))
+    {
+        context.Request.Headers.Add("Authorization", "Bearer " + JWToken);
+    }
+    await next();
+});
+
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllerRoute(

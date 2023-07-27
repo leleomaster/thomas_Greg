@@ -1,31 +1,22 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using NuGet.Common;
-using System.Net.Http.Headers;
-using System.Net.Http;
+﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 using ThomasGreg.Domain.Models;
 using ThomasGreg.Web.Sevices;
 using ThomasGreg.Web.Utils;
-using System.IdentityModel.Tokens.Jwt;
-using Microsoft.EntityFrameworkCore.Query.Internal;
-using Microsoft.AspNetCore.Authentication.Cookies;
-using Microsoft.AspNetCore.Authentication;
-using System.Security.Claims;
 
-namespace ThomasGreg.Web.Controllers
+namespace ThomasGreg.Web2.Controllers
 {
-    public class AccountController : Controller
+    public class AccountController : BaseController
     {
         private readonly HttpClient _httpClient = HttpClientSingleton.GetHttpClient();
         private string endpoint = "/api/Authenticate";
         private string basePath = "";
         private readonly IConfiguration _configuration;
-
         public AccountController(IConfiguration configuration)
         {
             _configuration = configuration;
             basePath = _configuration["thomasGregAPI:baseURL"] + endpoint;
         }
-
         public IActionResult Login()
         {
             return View();
@@ -34,53 +25,36 @@ namespace ThomasGreg.Web.Controllers
         [HttpPost]
         public async Task<IActionResult> Login(UserInfoViewModel model)
         {
-            var response = await _httpClient.PostAsJson($"{basePath}/login", model);
-
-            if (response.IsSuccessStatusCode)
+            try
             {
-                var userToken = await response.RedContentAsync<UserTokenViewModel>();
+                var response = await _httpClient.PostAsJson($"{basePath}/login", model);
 
-                // HttpContext.Session.SetString("JWToken", userToken.Token);
-                // 
-
-                //    List<Claim> claims = new List<Claim>() {
-                //    new Claim(ClaimTypes.NameIdentifier, modelLogin.Email),
-                //    new Claim("OtherProperties","Example Role")
-
-                //};
-
-                ClaimsIdentity claimsIdentity = new ClaimsIdentity(
-                    CookieAuthenticationDefaults.AuthenticationScheme);
-
-                AuthenticationProperties properties = new AuthenticationProperties()
+                if (response.IsSuccessStatusCode)
                 {
-                    AllowRefresh = true,
-                    IsPersistent = model.ManterLogado
-                };
+                    var userToken = await response.RedContentAsync<UserTokenViewModel>();
 
-                properties.StoreTokens(
-                    new List<AuthenticationToken>()
-                    {
-                            new AuthenticationToken()
-                            {
-                                Name = "teste_access_token", Value =userToken.Token
-                            }
-                    }
-                    );
+                    HttpContext.Session.SetString("JWToken", userToken.Token);
 
-                await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme,
-                    new ClaimsPrincipal(claimsIdentity), properties);
-
-                return RedirectToAction("Index", "Home");
+                    // Show Success Message -"Welcome!"    
+                    return RedirectToAction("Index", "Home");
+                }
+                else
+                {
+                    //  Show Error Message- "Invalid Credentials."    
+                    return View("Login", model);
+                }
             }
-            else
-                return View(model);
+            catch (Exception ex)
+            {
+                //Show Error Message- ex.Message    
+                return View("Login", model);
+            }
         }
 
         public IActionResult Logout()
         {
-            //HttpContext.Request.
-            return RedirectToAction("index", "Home");
+            HttpContext.Session.Clear();
+            return RedirectToAction("Login");
         }
     }
 }

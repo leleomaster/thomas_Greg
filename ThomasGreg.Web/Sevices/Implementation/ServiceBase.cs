@@ -31,21 +31,21 @@ namespace ThomasGreg.Web.Sevices.Implementation
             return await response.RedContentAsync<T>();
         }
 
-        public async Task<T> Adicionar(T model, string token)
+        public async Task<bool> Adicionar(T model, string token)
         {
             _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
             var response = await _httpClient.PostAsJson($"{basePath}", model);
 
-            if (response.IsSuccessStatusCode) return await response.RedContentAsync<T>();
+            if (response.IsSuccessStatusCode) return true;
             else throw new Exception("Something went worng when calling API");
         }
 
-        public async Task<T> Atualizar(T model, string token)
+        public async Task<bool> Atualizar(T model, string token)
         {
             _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
             var response = await _httpClient.PutAsJson($"{basePath}", model);
 
-            if (response.IsSuccessStatusCode) return await response.RedContentAsync<T>();
+            if (response.IsSuccessStatusCode) return true;
             else throw new Exception("Something went worng when calling API");
         }
 
@@ -54,7 +54,7 @@ namespace ThomasGreg.Web.Sevices.Implementation
             _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
             var response = await _httpClient.DeleteAsync($"{basePath}/{id}");
 
-            if (response.IsSuccessStatusCode) return await response.RedContentAsync<bool>();
+            if (response.IsSuccessStatusCode) return true;
             else throw new Exception("Something went worng when calling API");
         }
     }

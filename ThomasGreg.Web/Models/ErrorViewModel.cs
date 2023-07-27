@@ -1,4 +1,4 @@
-namespace ThomasGreg.Web.Models
+namespace ThomasGreg.Web2.Models
 {
     public class ErrorViewModel
     {

@@ -24,7 +24,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		redme.txt = redme.txt
 	EndProjectSection
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ThomasGreg.Web", "ThomasGreg.Web2\ThomasGreg.Web.csproj", "{715BA1C2-C670-4A82-80A0-C8D6B9A6FE10}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ThomasGreg.Web", "ThomasGreg.Web\ThomasGreg.Web.csproj", "{715BA1C2-C670-4A82-80A0-C8D6B9A6FE10}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

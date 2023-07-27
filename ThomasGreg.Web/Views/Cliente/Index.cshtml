@@ -1,5 +1,4 @@
-﻿@using ThomasGreg.Domain.Models
-@model IEnumerable<ClienteViewModel>
+﻿@model IEnumerable<ThomasGreg.Domain.Models.ClienteViewModel>
 
 @{
     ViewData["Title"] = "Index";
@@ -8,7 +7,7 @@
 <h1>Index</h1>
 
 <p>
-    <a asp-action="Create">Create New</a>
+    <a asp-action="Create">Cadastrar</a>
 </p>
 <table class="table">
     <thead>
@@ -21,10 +20,6 @@
             </th>
             <th>
                 @Html.DisplayNameFor(model => model.Logotipo)
-            </th>
-
-            <th>
-                @Html.DisplayNameFor(model => model.IdsLogradouro)
             </th>
             <th></th>
         </tr>
@@ -40,21 +35,12 @@
                     @Html.DisplayFor(modelItem => item.Email)
                 </td>
                 <td>
-                    @Html.DisplayFor(modelItem => item.Logotipo)
+                    <img src="@item.ImgDataURL" class="max-width-image-cliente">
                 </td>
                 <td>
-                    @{
-                        var logradouros = "";
-                        foreach (var logradouro in item.IdsLogradouro)
-                        {
-                            logradouros += logradouro;
-                        }
-                    }
-                </td>
-                <td>
-                    @Html.ActionLink("Edit", "Edit", new {  id=item.Id  }) |
-                    @Html.ActionLink("Details", "Details", new { id=item.Id }) |
-                    @Html.ActionLink("Delete", "Delete", new { id=item.Id })
+                    <a asp-action="Edit" asp-route-id="@item.Id">Atualizar</a> |
+                    <a asp-action="Details" asp-route-id="@item.Id">Detalhes</a> |
+                    <a asp-action="Delete" asp-route-id="@item.Id">Excluir</a>
                 </td>
             </tr>
         }
