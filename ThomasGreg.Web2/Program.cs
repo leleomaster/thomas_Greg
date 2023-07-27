@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using System.Net;
 using System.Text;
 using ThomasGreg.Web.Sevices.Implementation;
 using ThomasGreg.Web.Sevices.Interfaces;
@@ -71,6 +72,15 @@ if (!app.Environment.IsDevelopment())
     app.UseHsts();
 }
 
+// Redireciona o usuário para a página de LOGIN se ele não estiver logado/autenticado
+app.UseStatusCodePages(async context =>
+{
+    var response = context.HttpContext.Response;
+
+    if (response.StatusCode == (int)HttpStatusCode.Unauthorized ||
+            response.StatusCode == (int)HttpStatusCode.Forbidden)
+        response.Redirect("/account/login");
+});
 app.UseHttpsRedirection();
 app.UseStaticFiles();
 
